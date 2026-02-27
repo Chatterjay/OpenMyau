@@ -141,6 +141,7 @@ public class Myau {
         commandManager.commands.add(new TargetCommand());
         commandManager.commands.add(new ToggleCommand());
         commandManager.commands.add(new VclipCommand());
+        commandManager.commands.add(new RemoveConfigCommand());
         for (Module module : moduleManager.modules.values()) {
             ArrayList<Property<?>> properties = new ArrayList<>();
             for (final Field field : module.getClass().getDeclaredFields()) {
