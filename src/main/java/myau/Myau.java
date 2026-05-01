@@ -30,6 +30,7 @@ public class Myau {
     public static LagManager lagManager;
     public static PlayerStateManager playerStateManager;
     public static FriendManager friendManager;
+    public static NickManager nickManager;
     public static TargetManager targetManager;
     public static PropertyManager propertyManager;
     public static ModuleManager moduleManager;
@@ -47,6 +48,7 @@ public class Myau {
         lagManager = new LagManager();
         playerStateManager = new PlayerStateManager();
         friendManager = new FriendManager();
+        nickManager = new NickManager();
         targetManager = new TargetManager();
         propertyManager = new PropertyManager();
         moduleManager = new ModuleManager();
@@ -135,6 +137,7 @@ public class Myau {
         commandManager.commands.add(new FriendCommand());
         commandManager.commands.add(new HelpCommand());
         commandManager.commands.add(new HideCommand());
+        commandManager.commands.add(new NickCommand());
         commandManager.commands.add(new IgnCommand());
         commandManager.commands.add(new ItemCommand());
         commandManager.commands.add(new ListCommand());
@@ -173,6 +176,7 @@ public class Myau {
         if (targetManager.file.exists()) {
             targetManager.load();
         }
+        nickManager.load();
         Runtime.getRuntime().addShutdownHook(new Thread(config::save));
 
         try (InputStreamReader reader = new InputStreamReader(Objects.requireNonNull(Myau.class.getResourceAsStream("/version.json")), StandardCharsets.UTF_8)) {
