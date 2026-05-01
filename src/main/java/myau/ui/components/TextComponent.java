@@ -1,17 +1,16 @@
-
 package myau.ui.components;
 
 import myau.enums.ChatColors;
-import myau.property.properties.BooleanProperty;
 import myau.property.properties.TextProperty;
 import myau.ui.ClickGui;
 import myau.ui.Component;
+import myau.ui.StyleHelper;
 import myau.ui.callback.GuiInput;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import org.lwjgl.opengl.GL11;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
 
 public class TextComponent implements Component {
     private final TextProperty property;
@@ -19,6 +18,7 @@ public class TextComponent implements Component {
     private int offsetY;
     private int x;
     private int y;
+    private boolean hovered;
 
     public TextComponent(TextProperty property, ModuleComponent parentModule, int offsetY) {
         this.property = property;
@@ -28,26 +28,34 @@ public class TextComponent implements Component {
         this.offsetY = offsetY;
     }
 
-
     public void draw(AtomicInteger offset) {
+        int rowX = this.module.category.getX();
+        int rowY = this.module.category.getY() + this.offsetY;
+
+        // Hover highlight
+        if (this.hovered) {
+            Gui.drawRect(rowX, rowY, rowX + this.module.category.getWidth(), rowY + 14, StyleHelper.SETTINGS_BG);
+        }
+
+        // Text (scaled 0.5x)
         GL11.glPushMatrix();
         GL11.glScaled(0.5D, 0.5D, 0.5D);
-        Minecraft.getMinecraft().fontRendererObj.drawString(this.property.getName().replace("-", " ") + ": " + ChatColors.formatColor(this.property.formatValue()), (float) ((this.module.category.getX() + 4) * 2), (float) ((this.module.category.getY() + this.offsetY + 5) * 2), -1, false);
+        Minecraft.getMinecraft().fontRendererObj.drawString(
+                this.property.getName().replace("-", " ") + ": " + ChatColors.formatColor(this.property.formatValue()),
+                (float) ((rowX + 4) * 2), (float) ((rowY + 4) * 2),
+                StyleHelper.TEXT_PRIMARY, false);
         GL11.glPopMatrix();
     }
 
-    public void setComponentStartAt(int newOffsetY) {
-        this.offsetY = newOffsetY;
-    }
+    public void setComponentStartAt(int newOffsetY) { this.offsetY = newOffsetY; }
 
     @Override
-    public int getHeight() {
-        return 12;
-    }
+    public int getHeight() { return 14; }
 
     public void update(int mousePosX, int mousePosY) {
         this.y = this.module.category.getY() + this.offsetY;
         this.x = this.module.category.getX();
+        this.hovered = isHovered(mousePosX, mousePosY);
     }
 
     public void mouseDown(int x, int y, int button) {
@@ -57,22 +65,14 @@ public class TextComponent implements Component {
     }
 
     @Override
-    public void mouseReleased(int x, int y, int button) {
-
-    }
-
+    public void mouseReleased(int x, int y, int button) {}
     @Override
-    public void keyTyped(char chatTyped, int keyCode) {
-
-    }
+    public void keyTyped(char chatTyped, int keyCode) {}
 
     public boolean isHovered(int x, int y) {
-        return x > this.x && x < this.x + this.module.category.getWidth() && y > this.y && y < this.y + 11;
+        return x > this.x && x < this.x + this.module.category.getWidth() && y > this.y && y < this.y + 14;
     }
-
 
     @Override
-    public boolean isVisible() {
-        return property.isVisible();
-    }
+    public boolean isVisible() { return property.isVisible(); }
 }

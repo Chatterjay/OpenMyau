@@ -1,4 +1,3 @@
-
 package myau.ui;
 
 import com.google.gson.GsonBuilder;
@@ -12,7 +11,6 @@ import myau.ui.components.CategoryComponent;
 import net.minecraft.client.gui.GuiScreen;
 import org.lwjgl.input.Mouse;
 
-import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -131,26 +129,25 @@ public class ClickGui extends GuiScreen {
         this.categoryList = new ArrayList<>();
         int topOffset = 5;
 
-
         CategoryComponent combat = new CategoryComponent("Combat", combatModules);
         combat.setY(topOffset);
         categoryList.add(combat);
-        topOffset += 20;
+        topOffset += 22;
 
         CategoryComponent movement = new CategoryComponent("Movement", movementModules);
         movement.setY(topOffset);
         categoryList.add(movement);
-        topOffset += 20;
+        topOffset += 22;
 
         CategoryComponent render = new CategoryComponent("Render", renderModules);
         render.setY(topOffset);
         categoryList.add(render);
-        topOffset += 20;
+        topOffset += 22;
 
         CategoryComponent player = new CategoryComponent("Player", playerModules);
         player.setY(topOffset);
         categoryList.add(player);
-        topOffset += 20;
+        topOffset += 22;
 
         CategoryComponent misc = new CategoryComponent("Misc", miscModules);
         misc.setY(topOffset);
@@ -159,24 +156,21 @@ public class ClickGui extends GuiScreen {
         loadPositions();
     }
 
-    public static ClickGui getInstance() {
-        return instance;
-    }
+    public static ClickGui getInstance() { return instance; }
 
-    public void initGui() {
-        super.initGui();
-    }
+    public void initGui() { super.initGui(); }
 
     public void drawScreen(int x, int y, float p) {
-        drawRect(0, 0, this.width, this.height, new Color(0, 0, 0, 100).getRGB());
+        drawRect(0, 0, this.width, this.height, 0x90000000);
 
-        mc.fontRendererObj.drawStringWithShadow("Myau " + Myau.version, 4, this.height - 3 - mc.fontRendererObj.FONT_HEIGHT * 2, new Color(60, 162, 253).getRGB());
-        mc.fontRendererObj.drawStringWithShadow("dev, ksyz", 4, this.height - 3 - mc.fontRendererObj.FONT_HEIGHT, new Color(60, 162, 253).getRGB());
+        mc.fontRendererObj.drawStringWithShadow("Myau " + Myau.version, 4,
+                this.height - 3 - mc.fontRendererObj.FONT_HEIGHT * 2, StyleHelper.TEXT_SECONDARY);
+        mc.fontRendererObj.drawStringWithShadow("dev, ksyz", 4,
+                this.height - 3 - mc.fontRendererObj.FONT_HEIGHT, StyleHelper.TEXT_SECONDARY);
 
         for (CategoryComponent category : categoryList) {
             category.render(this.fontRendererObj);
             category.handleDrag(x, y);
-
             for (Component module : category.getModules()) {
                 module.update(x, y);
             }
@@ -192,65 +186,40 @@ public class ClickGui extends GuiScreen {
     }
 
     public void mouseClicked(int x, int y, int mouseButton) {
-        Iterator<CategoryComponent> btnCat = categoryList.iterator();
-        while (true) {
-            CategoryComponent category;
-            do {
-                do {
-                    if (!btnCat.hasNext()) {
-                        return;
-                    }
+        // Phase 1: Check header interactions for ALL categories (drag, toggle, pin)
+        for (CategoryComponent cat : categoryList) {
+            if (cat.insideArea(x, y) && mouseButton == 0) {
+                cat.mousePressed(true);
+                cat.xx = x - cat.getX();
+                cat.yy = y - cat.getY();
+            }
+            if (cat.mousePressed(x, y) && mouseButton == 0) {
+                cat.setOpened(!cat.isOpened());
+            }
+            if (cat.isHovered(x, y) && mouseButton == 0) {
+                cat.setPin(!cat.isPin());
+            }
+        }
 
-                    category = btnCat.next();
-                    if (category.insideArea(x, y) && !category.isHovered(x, y) && !category.mousePressed(x, y) && mouseButton == 0) {
-                        category.mousePressed(true);
-                        category.xx = x - category.getX();
-                        category.yy = y - category.getY();
-                    }
-
-                    if (category.mousePressed(x, y) && mouseButton == 0) {
-                        category.setOpened(!category.isOpened());
-                    }
-
-                    if (category.isHovered(x, y) && mouseButton == 0) {
-                        category.setPin(!category.isPin());
-                    }
-                } while (!category.isOpened());
-            } while (category.getModules().isEmpty());
-
-            for (Component c : category.getModules()) {
+        // Phase 2: Delegate to module components in opened categories
+        for (CategoryComponent cat : categoryList) {
+            if (!cat.isOpened() || cat.getModules().isEmpty()) continue;
+            // Only process if click is below the header
+            if (y < cat.getY() + StyleHelper.PANEL_HEADER_HEIGHT + 3) continue;
+            for (Component c : cat.getModules()) {
                 c.mouseDown(x, y, mouseButton);
             }
         }
-
     }
 
     public void mouseReleased(int x, int y, int mouseButton) {
-        Iterator<CategoryComponent> iterator = categoryList.iterator();
-
-        CategoryComponent categoryComponent;
-        while (iterator.hasNext()) {
-            categoryComponent = iterator.next();
-            if (mouseButton == 0) {
-                categoryComponent.mousePressed(false);
-            }
+        for (CategoryComponent cc : categoryList) {
+            if (mouseButton == 0) cc.mousePressed(false);
         }
-
-        iterator = categoryList.iterator();
-
-        while (true) {
-            do {
-                do {
-                    if (!iterator.hasNext()) {
-                        return;
-                    }
-
-                    categoryComponent = iterator.next();
-                } while (!categoryComponent.isOpened());
-            } while (categoryComponent.getModules().isEmpty());
-
-            for (Component component : categoryComponent.getModules()) {
-                component.mouseReleased(x, y, mouseButton);
+        for (CategoryComponent cc : categoryList) {
+            if (!cc.isOpened() || cc.getModules().isEmpty()) continue;
+            for (Component c : cc.getModules()) {
+                c.mouseReleased(x, y, mouseButton);
             }
         }
     }
@@ -259,20 +228,8 @@ public class ClickGui extends GuiScreen {
         if (key == 1) {
             this.mc.displayGuiScreen(null);
         } else {
-            Iterator<CategoryComponent> btnCat = categoryList.iterator();
-
-            while (true) {
-                CategoryComponent cat;
-                do {
-                    do {
-                        if (!btnCat.hasNext()) {
-                            return;
-                        }
-
-                        cat = btnCat.next();
-                    } while (!cat.isOpened());
-                } while (cat.getModules().isEmpty());
-
+            for (CategoryComponent cat : categoryList) {
+                if (!cat.isOpened() || cat.getModules().isEmpty()) continue;
                 for (Component component : cat.getModules()) {
                     component.keyTyped(typedChar, key);
                 }
@@ -280,13 +237,8 @@ public class ClickGui extends GuiScreen {
         }
     }
 
-    public void onGuiClosed() {
-        savePositions();
-    }
-
-    public boolean doesGuiPauseGame() {
-        return false;
-    }
+    public void onGuiClosed() { savePositions(); }
+    public boolean doesGuiPauseGame() { return false; }
 
     private void savePositions() {
         JsonObject json = new JsonObject();
