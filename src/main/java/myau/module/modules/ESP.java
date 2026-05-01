@@ -112,7 +112,6 @@ public class ESP extends Module {
             if (!renderedEntities.isEmpty()) {
                 if (this.mode.getValue() == 3) {
                     GlStateManager.pushMatrix();
-                    GlStateManager.pushAttrib();
                     if (this.framebuffer == null) {
                         this.framebuffer = new Framebuffer(mc.displayWidth, mc.displayHeight, false);
                     }
@@ -143,7 +142,6 @@ public class ESP extends Module {
                     this.outlineRenderer.stop();
                     this.framebuffer.framebufferClear();
                     mc.getFramebuffer().bindFramebuffer(false);
-                    GlStateManager.popAttrib();
                     GlStateManager.popMatrix();
                 }
                 if (this.mode.getValue() == 1 || this.healthBar.getValue() == 1) {

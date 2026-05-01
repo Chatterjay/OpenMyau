@@ -116,6 +116,9 @@ public class RenderUtil {
         GlStateManager.popMatrix();
         RenderHelper.disableStandardItemLighting();
         GlStateManager.enableAlpha();
+        // renderItemIntoGUI changes alphaFunc to (GL_GREATER, 0.1F) then disables alpha
+        // without restoring func/ref — reset to Minecraft default
+        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.5F);
         GlStateManager.disableBlend();
         GlStateManager.enableTexture2D();
         GlStateManager.popMatrix();

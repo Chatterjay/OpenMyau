@@ -29,6 +29,9 @@ public class BindComponent implements Component {
         int rowX = this.parentModule.category.getX();
         int rowY = this.parentModule.category.getY() + this.offsetY;
 
+        // Row background (solid opaque)
+        Gui.drawRect(rowX, rowY, rowX + this.parentModule.category.getWidth(), rowY + 14, StyleHelper.SETTINGS_BG);
+
         String label = "Bind";
         String valueText;
         boolean showText = true;

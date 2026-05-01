@@ -30,10 +30,9 @@ public class CheckBoxComponent implements Component {
         int rowY = this.module.category.getY() + this.offsetY;
         int rowW = this.module.category.getWidth();
 
-        // Hover highlight
-        if (this.hovered) {
-            Gui.drawRect(rowX, rowY, rowX + rowW, rowY + 14, StyleHelper.SETTINGS_BG);
-        }
+        // Row background (solid opaque)
+        Gui.drawRect(rowX, rowY, rowX + rowW, rowY + 14,
+                this.hovered ? StyleHelper.SETTINGS_HOVER : StyleHelper.SETTINGS_BG);
 
         // Label (scaled 0.5x)
         GL11.glPushMatrix();

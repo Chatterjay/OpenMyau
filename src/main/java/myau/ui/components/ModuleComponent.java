@@ -87,9 +87,9 @@ public class ModuleComponent implements Component {
         Gui.drawRect(rowX, rowY, rowX + rowW, rowY + StyleHelper.MODULE_HEIGHT,
                 this.hovered ? StyleHelper.MODULE_HOVER : StyleHelper.MODULE_BG);
 
-        // Enabled indicator dot
+        // Enabled indicator dot (rainbow accent)
         if (this.mod.isEnabled()) {
-            int accent = StyleHelper.getCategoryAccent(this.category.categoryName);
+            int accent = StyleHelper.getModuleAccent(true, offset.get());
             Gui.drawRect(rowX + 3, rowY + (StyleHelper.MODULE_HEIGHT / 2) - 2,
                     rowX + 7, rowY + (StyleHelper.MODULE_HEIGHT / 2) + 2, accent);
         }

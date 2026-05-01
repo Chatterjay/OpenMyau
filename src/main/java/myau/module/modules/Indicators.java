@@ -123,6 +123,8 @@ public class Indicators extends Module {
             RenderUtil.disableRenderState();
             GlStateManager.popMatrix();
             GlStateManager.enableDepth();
+            GlStateManager.enableAlpha();
+            GlStateManager.alphaFunc(516, 0.5F);
             GlStateManager.popMatrix();
         }
     }

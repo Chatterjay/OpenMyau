@@ -105,6 +105,7 @@ public class ClickGui extends GuiScreen {
         miscModules.add(Myau.moduleManager.getModule(AntiObfuscate.class));
         miscModules.add(Myau.moduleManager.getModule(AutoAnduril.class));
         miscModules.add(Myau.moduleManager.getModule(InventoryClicker.class));
+        miscModules.add(Myau.moduleManager.getModule(ItemCounter.class));
 
         Comparator<Module> comparator = Comparator.comparing(m -> m.getName().toLowerCase());
         combatModules.sort(comparator);
@@ -205,7 +206,7 @@ public class ClickGui extends GuiScreen {
         for (CategoryComponent cat : categoryList) {
             if (!cat.isOpened() || cat.getModules().isEmpty()) continue;
             // Only process if click is below the header
-            if (y < cat.getY() + StyleHelper.PANEL_HEADER_HEIGHT + 3) continue;
+            if (y < cat.getY() + StyleHelper.PANEL_HEADER_HEIGHT + 2) continue;
             for (Component c : cat.getModules()) {
                 c.mouseDown(x, y, mouseButton);
             }

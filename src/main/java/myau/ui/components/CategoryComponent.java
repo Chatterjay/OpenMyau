@@ -56,7 +56,7 @@ public class CategoryComponent {
 
     public void render(FontRenderer renderer) {
         ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
-        this.maxHeight = sr.getScaledHeight() - 40; // dynamic max height
+        this.maxHeight = sr.getScaledHeight() - 40;
         this.width = StyleHelper.PANEL_WIDTH;
         update();
         height = 0;
@@ -67,66 +67,67 @@ public class CategoryComponent {
         if (animScroll > maxScroll) animScroll = maxScroll;
         animScroll += (scroll - animScroll) * 0.2;
 
-        // Panel background when open
+        int accent = StyleHelper.getCategoryAccent(this.categoryName);
+
+        // Panel border + background when open
         if (!this.modulesInCategory.isEmpty() && this.categoryOpened) {
             int displayHeight = Math.min(height, maxHeight);
-            Gui.drawRect(this.x, this.y + StyleHelper.PANEL_HEADER_HEIGHT + 2,
-                    this.x + this.width, this.y + StyleHelper.PANEL_HEADER_HEIGHT + 2 + displayHeight,
-                    StyleHelper.PANEL_BG);
-            // Bottom border line
-            Gui.drawRect(this.x, this.y + StyleHelper.PANEL_HEADER_HEIGHT + 2 + displayHeight,
-                    this.x + this.width, this.y + StyleHelper.PANEL_HEADER_HEIGHT + 3 + displayHeight,
-                    StyleHelper.PANEL_BORDER);
+            Gui.drawRect(this.x, this.y, this.x + this.width,
+                    this.y + StyleHelper.PANEL_HEADER_HEIGHT + 2 + displayHeight, StyleHelper.PANEL_BORDER);
+            Gui.drawRect(this.x + 1, this.y + 1, this.x + this.width - 1,
+                    this.y + StyleHelper.PANEL_HEADER_HEIGHT + 1 + displayHeight, StyleHelper.PANEL_BG);
         }
 
-        // Header bar
+        // Header background
         Gui.drawRect(this.x, this.y, this.x + this.width, this.y + StyleHelper.PANEL_HEADER_HEIGHT, StyleHelper.HEADER_BG);
-        // Bottom border of header
-        Gui.drawRect(this.x, this.y + StyleHelper.PANEL_HEADER_HEIGHT, this.x + this.width,
-                this.y + StyleHelper.PANEL_HEADER_HEIGHT + 1, StyleHelper.PANEL_BORDER);
 
-        // Accent bar (left edge)
-        int accent = StyleHelper.getCategoryAccent(this.categoryName);
+        // Accent bar
         Gui.drawRect(this.x, this.y, this.x + StyleHelper.ACCENT_BAR_WIDTH, this.y + StyleHelper.PANEL_HEADER_HEIGHT, accent);
 
-        // Title text (scaled 0.5x)
+        // Accent underline
+        Gui.drawRect(this.x + 1, this.y + StyleHelper.PANEL_HEADER_HEIGHT - 1,
+                this.x + this.width - 1, this.y + StyleHelper.PANEL_HEADER_HEIGHT, accent);
+
+        // Title text
         GL11.glPushMatrix();
         GL11.glScaled(0.5D, 0.5D, 0.5D);
         renderer.drawString(this.categoryName,
                 (float) ((this.x + StyleHelper.ACCENT_BAR_WIDTH + 4) * 2),
                 (float) ((this.y + 4) * 2),
                 StyleHelper.TEXT_PRIMARY, false);
-        // ± toggle indicator drawn as text
+        // ± toggle
         renderer.drawString(this.categoryOpened ? "−" : "+",
                 (float) ((this.x + this.width - 18) * 2),
                 (float) ((this.y + 2) * 2),
                 StyleHelper.TEXT_SECONDARY, false);
         GL11.glPopMatrix();
 
-        // Pin indicator (top-right 8x8)
+        // Pin indicator
         int pinX = this.x + this.width - 11;
         int pinY = this.y + 3;
-        Gui.drawRect(pinX, pinY, pinX + 8, pinY + 8, this.pin ? (accent & 0x00FFFFFF) | 0xC0000000 : 0x30404060);
+        Gui.drawRect(pinX, pinY, pinX + 8, pinY + 8, 0xFF3A3A5E);
         if (this.pin) {
             Gui.drawRect(pinX + 2, pinY + 2, pinX + 6, pinY + 6, accent);
         }
 
-        // Module list with scissor
+        // Module list
         if (this.categoryOpened && !this.modulesInCategory.isEmpty()) {
             int renderHeight = 0;
             double scale = sr.getScaleFactor();
-            int contentTop = this.y + StyleHelper.PANEL_HEADER_HEIGHT + 3;
-            int contentBottom = contentTop + maxHeight;
+            int contentTop = this.y + StyleHelper.PANEL_HEADER_HEIGHT + 2;
+            int contentBottom = contentTop + maxHeight - 1;
             GL11.glEnable(GL11.GL_SCISSOR_TEST);
-            GL11.glScissor((int) (this.x * scale), (int) ((sr.getScaledHeight() - contentBottom) * scale),
-                    (int) (this.width * scale), (int) (maxHeight * scale));
+            GL11.glScissor((int) ((this.x + 1) * scale),
+                    (int) ((sr.getScaledHeight() - contentBottom) * scale),
+                    (int) ((this.width - 2) * scale),
+                    (int) ((contentBottom - contentTop) * scale));
 
             int i = 0;
             for (Component c2 : this.modulesInCategory) {
                 int compHeight = c2.getHeight();
                 if (renderHeight + compHeight > animScroll && renderHeight < animScroll + maxHeight) {
                     int drawY = (int) (renderHeight - animScroll);
-                    c2.setComponentStartAt(StyleHelper.PANEL_HEADER_HEIGHT + 3 + drawY);
+                    c2.setComponentStartAt(StyleHelper.PANEL_HEADER_HEIGHT + 2 + drawY);
                     c2.draw(new AtomicInteger(i));
                 }
                 renderHeight += compHeight;
@@ -137,19 +138,19 @@ public class CategoryComponent {
             // Scrollbar
             if (height > maxHeight) {
                 float trackY = contentTop;
-                float trackH = maxHeight;
-                Gui.drawRect(this.x + this.width - StyleHelper.SCROLLBAR_WIDTH, (int) trackY,
-                        this.x + this.width, (int) (trackY + trackH), StyleHelper.SCROLLBAR_BG);
+                float trackH = contentBottom - contentTop;
+                Gui.drawRect(this.x + this.width - StyleHelper.SCROLLBAR_WIDTH - 1, (int) trackY,
+                        this.x + this.width - 1, (int) (trackY + trackH), StyleHelper.SCROLLBAR_BG);
                 float thumbH = Math.max(16, trackH * trackH / height);
-                float thumbY = trackY + (float) ((animScroll / height) * trackH);
-                Gui.drawRect(this.x + this.width - StyleHelper.SCROLLBAR_WIDTH, (int) thumbY,
-                        this.x + this.width, (int) (thumbY + thumbH), StyleHelper.SCROLLBAR_FG);
+                float thumbY = trackY + (float) ((animScroll / height) * (trackH - thumbH));
+                Gui.drawRect(this.x + this.width - StyleHelper.SCROLLBAR_WIDTH - 1, (int) thumbY,
+                        this.x + this.width - 1, (int) (thumbY + thumbH), StyleHelper.SCROLLBAR_FG);
             }
         }
     }
 
     public void update() {
-        int offset = StyleHelper.PANEL_HEADER_HEIGHT + 3;
+        int offset = StyleHelper.PANEL_HEADER_HEIGHT + 2;
         for (Component component : this.modulesInCategory) {
             component.setComponentStartAt(offset);
             offset += component.getHeight();
@@ -162,33 +163,25 @@ public class CategoryComponent {
 
     public void handleDrag(int x, int y) {
         if (this.dragging) {
-            int newX = x - this.xx;
-            int newY = y - this.yy;
-            // Clamp to keep at least the header area within the screen
             ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
             int sw = sr.getScaledWidth();
             int sh = sr.getScaledHeight();
-            newX = StyleHelper.clamp(newX, -(this.width - 24), sw - 24);
-            newY = StyleHelper.clamp(newY, -4, sh - StyleHelper.PANEL_HEADER_HEIGHT - 4);
-            this.setX(newX);
-            this.setY(newY);
+            this.setX(StyleHelper.clamp(x - this.xx, -(this.width - 24), sw - 24));
+            this.setY(StyleHelper.clamp(y - this.yy, -4, sh - StyleHelper.PANEL_HEADER_HEIGHT - 4));
         }
     }
 
-    /** Pin button hit area (top-right) */
     public boolean isHovered(int x, int y) {
         int pinX = this.x + this.width - 11;
         int pinY = this.y + 3;
         return x >= pinX && x <= pinX + 8 && y >= pinY && y <= pinY + 8;
     }
 
-    /** ± toggle hit area (right side of header) */
     public boolean mousePressed(int x, int y) {
         return x >= this.x + this.width - 24 && x <= this.x + this.width - 14
                 && y >= this.y + 2 && y <= this.y + StyleHelper.PANEL_HEADER_HEIGHT - 1;
     }
 
-    /** Header drag area (everything else in header) */
     public boolean insideArea(int x, int y) {
         return x >= this.x && x <= this.x + this.width
                 && y >= this.y && y <= this.y + StyleHelper.PANEL_HEADER_HEIGHT
@@ -200,11 +193,11 @@ public class CategoryComponent {
 
     public void onScroll(int mouseX, int mouseY, int scrollAmount) {
         if (!categoryOpened || height <= maxHeight) return;
-        int contentTop = this.y + StyleHelper.PANEL_HEADER_HEIGHT + 3;
+        int contentTop = this.y + StyleHelper.PANEL_HEADER_HEIGHT + 2;
         int contentBottom = contentTop + maxHeight;
         if (mouseX >= this.x && mouseX <= this.x + width && mouseY >= contentTop && mouseY <= contentBottom) {
             scroll -= scrollAmount * 12;
-            scroll = Math.max(0, Math.min(scroll, height - maxHeight));
+            scroll = StyleHelper.clamp(scroll, 0, height - maxHeight);
         }
     }
 }

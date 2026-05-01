@@ -39,6 +39,9 @@ public class SliderComponent implements Component {
         int rowY = this.parentModule.category.getY() + this.offsetY;
         int rowW = this.parentModule.category.getWidth();
 
+        // Row background (solid opaque)
+        Gui.drawRect(rowX, rowY, rowX + rowW, rowY + 18, StyleHelper.SETTINGS_BG);
+
         // Label + value (scaled 0.5x)
         GL11.glPushMatrix();
         GL11.glScaled(0.5D, 0.5D, 0.5D);

@@ -28,6 +28,9 @@ public class ModeComponent implements Component {
         int rowX = this.parentModule.category.getX();
         int rowY = this.parentModule.category.getY() + this.offsetY;
 
+        // Row background (solid opaque)
+        Gui.drawRect(rowX, rowY, rowX + this.parentModule.category.getWidth(), rowY + 14, StyleHelper.SETTINGS_BG);
+
         String mode = this.property.getModeString().replace("_", " ");
         String label = this.property.getName() + ": ";
         String modeDisplay = mode.substring(0, 1).toUpperCase() + mode.substring(1).toLowerCase();

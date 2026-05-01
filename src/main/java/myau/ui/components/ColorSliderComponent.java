@@ -40,6 +40,9 @@ public class ColorSliderComponent implements Component {
         int y = parentModule.category.getY() + offsetY;
         int width = parentModule.category.getWidth() - 8;
 
+        // Row background (solid opaque)
+        Gui.drawRect(parentModule.category.getX(), y, parentModule.category.getX() + parentModule.category.getWidth(), y + 40, StyleHelper.SETTINGS_BG);
+
         // Label (scaled 0.5x)
         GL11.glPushMatrix();
         GL11.glScaled(0.5, 0.5, 0.5);

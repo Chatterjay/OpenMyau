@@ -32,10 +32,9 @@ public class TextComponent implements Component {
         int rowX = this.module.category.getX();
         int rowY = this.module.category.getY() + this.offsetY;
 
-        // Hover highlight
-        if (this.hovered) {
-            Gui.drawRect(rowX, rowY, rowX + this.module.category.getWidth(), rowY + 14, StyleHelper.SETTINGS_BG);
-        }
+        // Row background (solid opaque)
+        Gui.drawRect(rowX, rowY, rowX + this.module.category.getWidth(), rowY + 14,
+                this.hovered ? StyleHelper.SETTINGS_HOVER : StyleHelper.SETTINGS_BG);
 
         // Text (scaled 0.5x)
         GL11.glPushMatrix();
