@@ -497,6 +497,7 @@ public class RenderUtil {
         GlStateManager.disableCull();
         GlStateManager.disableAlpha();
         GlStateManager.disableDepth();
+        GlStateManager.disableLighting();
     }
 
     public static void disableRenderState() {
