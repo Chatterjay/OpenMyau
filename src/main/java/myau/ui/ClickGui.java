@@ -107,6 +107,7 @@ public class ClickGui extends GuiScreen {
         miscModules.add(Myau.moduleManager.getModule(InventoryClicker.class));
         miscModules.add(Myau.moduleManager.getModule(ItemCounter.class));
         miscModules.add(Myau.moduleManager.getModule(GLDebug.class));
+        miscModules.add(Myau.moduleManager.getModule(MCPick.class));
 
         Comparator<Module> comparator = Comparator.comparing(m -> m.getName().toLowerCase());
         combatModules.sort(comparator);

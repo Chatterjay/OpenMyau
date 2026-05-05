@@ -55,6 +55,7 @@ public class ItemAlarm extends Module {
     public final BooleanProperty marker = new BooleanProperty("marker", true);
     public final ModeProperty markerPos = new ModeProperty("marker-position", 0, new String[]{"LEFT", "RIGHT"});
     public final IntProperty maxMarkers = new IntProperty("max-markers", 5, 1, 20);
+    public final IntProperty markerDuration = new IntProperty("marker-duration", 30, 1, 300);
 
     // Tracked markers: "uuid|itemType" -> (itemStack, expiryMs)
     // Composite key so one player can have multiple different item markers stacked
@@ -106,7 +107,7 @@ public class ItemAlarm extends Module {
                     // Track for visual marker (composite key per player + item type)
                     if (this.marker.getValue() && itemStack != null) {
                         tracked.put(trackKey(player.getPersistentID(), heldItems.name()),
-                                new TrackedPlayer(itemStack.copy(), now + cooldown.getValue() * 1000L));
+                                new TrackedPlayer(itemStack.copy(), now + markerDuration.getValue() * 1000L));
                     }
 
                     IChatComponent info1 = new ChatComponentText(ChatColors.formatColor(String.format(

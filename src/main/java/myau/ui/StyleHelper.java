@@ -52,7 +52,7 @@ public class StyleHelper {
 
     // ── Dimensions ──
     public static final int ACCENT_BAR_WIDTH  = 3;
-    public static final int PANEL_WIDTH       = 110;
+    public static final int PANEL_WIDTH       = 90;
     public static final int PANEL_HEADER_HEIGHT = 14;
     public static final int SCROLLBAR_WIDTH   = 3;
     public static final int MODULE_HEIGHT     = 16;
