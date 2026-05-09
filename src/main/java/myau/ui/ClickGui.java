@@ -104,6 +104,7 @@ public class ClickGui extends GuiScreen {
         miscModules.add(Myau.moduleManager.getModule(AntiObbyTrap.class));
         miscModules.add(Myau.moduleManager.getModule(AntiObfuscate.class));
         miscModules.add(Myau.moduleManager.getModule(AutoAnduril.class));
+        miscModules.add(Myau.moduleManager.getModule(AutoReconnect.class));
         miscModules.add(Myau.moduleManager.getModule(InventoryClicker.class));
         miscModules.add(Myau.moduleManager.getModule(ItemCounter.class));
         miscModules.add(Myau.moduleManager.getModule(GLDebug.class));
